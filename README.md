@@ -4,7 +4,7 @@ Simple try catch module using [middleclass](https://github.com/kikito/middleclas
 ### Usage
 
 ```lua
-local try = require("try-catch").tryCatch.try
+local try = require("try-catch").try
 
 try(function()
     error("raise error")
@@ -22,17 +22,17 @@ end)
 
 ```lua
 local class = require("middleclass")
-local module = require("try-catch")
+local tryCatch = require("try-catch")
 
 ---Set Custom Exception Class
-local customException = class("exception", module.exception)
+local customException = class("exception", tryCatch.exceptionBase)
 
 function customException:initialize(msg)
     self.base(msg)
     self.message = "this is customException: " .. msg
 end
 
-module.tryCatch.customException = customException
+tryCatch.options.customException = customException
 ```
 
 ```lua
@@ -40,7 +40,7 @@ try(function()
     error("raise error")
 end)
 .catch(function(ex)
-    print(ex.message) --> this is customException: example.lua:18: error   
+    print(ex.message) --> this is customException: example.lua:18: raise error   
 end)
 ```
 

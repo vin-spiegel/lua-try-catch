@@ -1,7 +1,10 @@
 local class = require ("middleclass")
 local _container = nil
 
----@class exception Exception
+
+---@class Exception Exception
+---@field message string errror message
+---@field traceback string callstack
 local exception = class("exception")
 
 function exception:initialize(msg)
@@ -16,40 +19,44 @@ end
 
 ---ErrorHandling Class
 ---@class ErrorHandler 
-local errorModule = {
+local handler = {
     customException = nil
 }
 
----@param fn fun(exception: any)
-errorModule.catch = function(fn)
+handler.setCustomException = function(c)
+end
+
+---@param fn fun(exception: Exception)
+handler.catch = function(fn)
     if type(fn) == "function" and _container ~= nil then
         fn(_container)
     end
-    return errorModule
+    return handler
 end
 
 ---@param fn function
-errorModule.finally = function(fn)
+handler.finally = function(fn)
     if type(fn) == "function" then
         fn()
     end
 end
 
 ---@param fn function
-errorModule.try = function(fn)
+local try = function(fn)
     local status, result = pcall(fn)
     if not status then
-        if errorModule.customException ~= nil then
-            _container = errorModule.customException:new(result)
+        if handler.customException ~= nil then
+            _container = handler.customException:new(result)
         else
 ---@diagnostic disable-next-line: undefined-field
             _container = exception:new(result)
         end
     end
-    return errorModule
+    return handler
 end
 
 return {
-    tryCatch = errorModule,
-    exception = exception,
+    exceptionBase = exception,
+    options = handler,
+    try = try,
 }
